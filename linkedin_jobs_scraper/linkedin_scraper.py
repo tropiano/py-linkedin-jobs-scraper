@@ -294,7 +294,7 @@ class LinkedinScraper:
                 cdp.set_user_agent(get_random_user_agent())
 
                 # Run strategy
-                self._strategy.run(
+                job_data = self._strategy.run(
                     driver,
                     cdp,
                     search_url,
@@ -340,12 +340,14 @@ class LinkedinScraper:
         # Emit END event
         self.emit(Events.END)
 
-    def run(self, queries: Union[Query, List[Query]], options: QueryOptions = None) -> None:
+        return job_data
+
+    def run(self, queries: Union[Query, List[Query]], options: QueryOptions = None) -> list:
         """
         Run a query or a list of queries
         :param queries: Union[Query, List[Query]]
         :param options: QueryOptions
-        :return: None
+        :return: list
         """
 
         # Validate input
@@ -373,7 +375,10 @@ class LinkedinScraper:
             query.merge_options(global_options)
 
         futures = [self._pool.submit(self.__run, query) for query in queries]
-        [f.result() for f in futures]  # Necessary also to get exceptions from futures
+
+        # print([f.result() for f in futures])
+        
+        return [f.result() for f in futures]  # Necessary also to get exceptions from futures
 
     def on(self, event: Events, cb: Callable, once=False) -> None:
         """

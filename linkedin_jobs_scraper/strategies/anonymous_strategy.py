@@ -249,7 +249,7 @@ class AnonymousStrategy(Strategy):
                 break
 
             info(tag, f'Found {jobs_tot} jobs')
-
+            all_data = []
             # Jobs loop
             while job_index < jobs_tot and processed < query.options.limit:
                 sleep(self.scraper.slow_mo)
@@ -357,12 +357,13 @@ class AnonymousStrategy(Strategy):
                     description_html=job_description_html)
 
                 info(tag, 'Processed')
+                all_data.append(data)
 
                 job_index += 1
                 processed += 1
 
                 self.scraper.emit(Events.DATA, data)
-
+                
                 # Try fetching more jobs
                 if processed < query.options.limit and job_index == jobs_tot:
                     jobs_tot = driver.execute_script('return document.querySelectorAll(arguments[0]).length;',
@@ -379,3 +380,5 @@ class AnonymousStrategy(Strategy):
             if not load_result['success']:
                 info(tag, "Couldn't find more jobs for the running query")
                 break
+        
+        return all_data
