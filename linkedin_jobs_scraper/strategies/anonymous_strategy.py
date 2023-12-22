@@ -315,13 +315,15 @@ class AnonymousStrategy(Strategy):
                     # Extract description
                     debug(tag, 'Evaluating selectors', [selectors.description])
 
-                    job_description, job_description_html = driver.execute_script(
+                    job_description, job_description_html, num_app = driver.execute_script(
                         '''
                             const el = document.querySelector(arguments[0]);
-                        
+                            const numApp = document.querySelector('.num-applicants__caption');
+
                             return [
                                 el.innerText,
-                                el.outerHTML    
+                                el.outerHTML,
+                                numApp.innerText
                             ];
                         ''',
                         selectors.description)
@@ -354,7 +356,8 @@ class AnonymousStrategy(Strategy):
                     link=job_link,
                     apply_link=job_apply_link,
                     description=job_description,
-                    description_html=job_description_html)
+                    description_html=job_description_html, 
+                    insights=[num_app])
 
                 info(tag, 'Processed')
                 all_data.append(data)
