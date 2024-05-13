@@ -346,7 +346,7 @@ class AuthenticatedStrategy(Strategy):
             if job_tot == 0:
                 info(tag, 'No jobs found, skip')
                 break
-
+            all_data = []
             # Jobs loop
             while job_index < job_tot and metrics.processed < query.options.limit:
                 sleep(self.scraper.slow_mo)
@@ -531,6 +531,7 @@ class AuthenticatedStrategy(Strategy):
                         insights=job_insights)
 
                     info(tag, 'Processed')
+                    all_data.append(data)
 
                     job_index += 1
                     metrics.processed += 1
@@ -587,3 +588,5 @@ class AuthenticatedStrategy(Strategy):
             if not paginate_result['success']:
                 info(tag, "Couldn't find more jobs for the running query")
                 return
+        
+        return all_data
